@@ -15,7 +15,7 @@ input_dataset = os.path.join(data_dir, "input_category.csv")
 # Final dataset with processed tweet text
 final_dataset = os.path.join(data_dir, "tweets_data.csv")
 # Frontend datasets - tweets count and hashtags
-frontend_dir = "frontend/src"
+frontend_dir = "frontend/src/dataset"
 hashtags_dataset = os.path.join(frontend_dir, "hashtags_data.csv")
 counts_dataset = os.path.join(frontend_dir, "counts_data.csv")
 

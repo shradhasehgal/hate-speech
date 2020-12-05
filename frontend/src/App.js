@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as d3 from 'd3';
-import counts from './counts_data.csv';
-import hashtags from './hashtags_data.csv';
+import counts from './dataset/counts_data.csv';
+import hashtags from './dataset/hashtags_data.csv';
 
 class App extends Component {
 
