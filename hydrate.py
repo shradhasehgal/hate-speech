@@ -8,10 +8,11 @@ import re
 
 twarc = Twarc()
 data_dir = "dataset"
+frontend_dir = "frontend/src"
 input_dataset = os.path.join(data_dir, "input_category.csv")
 final_dataset = os.path.join(data_dir, "tweets_data.csv")
-hashtags_dataset = os.path.join(data_dir, "hashtags_data.csv")
-counts_dataset = os.path.join(data_dir, "counts_data.csv")
+hashtags_dataset = os.path.join(frontend_dir, "hashtags_data.csv")
+counts_dataset = os.path.join(frontend_dir, "counts_data.csv")
 category_map = {}
 category_count = {"racism": 0, "sexism": 0, "none": 0}
 hashtags_count = {"racism": {}, "sexism": {}, "none": {}}
@@ -32,6 +33,7 @@ def main():
 def hydrate(id_file):
     with open(final_dataset, 'w') as output:
         linewriter = csv.writer(output, delimiter=',', quotechar="\"")
+        linewriter.writerow(["tweet", "hate"])
         for tweet in twarc.hydrate(id_file.open()):
             category = category_map[tweet['id_str']]
             category_count[category] += 1
@@ -45,7 +47,11 @@ def hydrate(id_file):
                         hashtags_count[category][hashtagText] = 1
             text = tweet['full_text'].lower()
             text = re.sub(r'[^\w\s]', '', text)
-            linewriter.writerow([text, category])
+            if category == "racism" or category == "sexism":
+                linewriter.writerow([text, 1])
+            else:
+                linewriter.writerow([text, 0])
+            # linewriter.writerow([text, category])
 
 def hashtags_write(id_file):
     for category in hashtags_count.keys():
@@ -53,15 +59,17 @@ def hashtags_write(id_file):
 
     with open(hashtags_dataset, 'w') as output:
         linewriter = csv.writer(output, delimiter=',', quotechar="\"")
+        linewriter.writerow(["hashtag", "count", "category"])
         for category,hashtags in hashtags_count.items():
             for hashtag,count in hashtags.items():
                 linewriter.writerow([hashtag, count, category]) 
 
 def counts_write(id_file):
     with open(counts_dataset, 'w') as output:
-            linewriter = csv.writer(output, delimiter=',', quotechar="\"")
-            for category,count in category_count.items():
-                linewriter.writerow([category, count]) 
+        linewriter = csv.writer(output, delimiter=',', quotechar="\"")
+        linewriter.writerow(["category", "count"])
+        for category,count in category_count.items():
+            linewriter.writerow([category, count]) 
 
 if __name__ == "__main__":
     main()
