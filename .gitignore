@@ -4,3 +4,4 @@
 env/
 twarc.log
 tweets.jsonl
+.eslintcache
