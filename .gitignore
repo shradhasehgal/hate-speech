@@ -1,8 +1,8 @@
 *.txt
-*.csv
 *.json
 env/
 twarc.log
 tweets.jsonl
 .eslintcache
 .ipynb_checkpoints
+dataset/
