@@ -1,4 +1,6 @@
 *.txt
 *.csv
+*.json
 env/
-hydrate.py
+twarc.log
+tweets.jsonl
