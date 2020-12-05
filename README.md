@@ -11,7 +11,7 @@ pip install -r requirements.txt
 python preprocess.py
 ```
 
-Data is stored in the folder `frontend/src/datasets/`. Tweet counts associated with each class are in the file `counts_data.csv` and hashtags with frequency are stored in `hashtags_data.csv`. 
+Data is stored in the folder `frontend/src/datasets/`. Tweet counts associated with each class are in the file `counts_data.csv` and hashtags with frequency are stored in `hashtags_data.csv`. `tweets_data.csv` in the `dataset` folder has the processed tweets with the associated hate class.
 
 ## Frontend
 
@@ -30,4 +30,6 @@ Binary classification of hateful and non-hateful is implemented in the `detectio
 
 ### Notes
 
-All files have relevant comments to indicate the function purposes.
+- Preprocessing of tweets was done in Python and the binary classifier was implemented using keras-TF.
+- Many hateful tweets have been removed, the 'racism' class has just 9 tweets.
+- All files have relevant comments to indicate the function purposes.
