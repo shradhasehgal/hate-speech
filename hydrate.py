@@ -3,31 +3,55 @@ from tqdm import tqdm
 from twarc import Twarc
 from pathlib import Path
 import os
-from csv import reader
+import csv
+import re 
 
 twarc = Twarc()
 data_dir = "dataset"
 input_dataset = os.path.join(data_dir, "input_category.csv")
-final_dataset = os.path.join(data_dir, "final_data.json")
+final_dataset = os.path.join(data_dir, "tweets_data.csv")
+hashtags_dataset = os.path.join(data_dir, "hashtags_data.csv")
 category_map = {}
+hashtags_count = {"racism": {}, "sexism": {}, "none": {}}
 
 def main():
     with open(input_dataset, 'r') as read_obj:
-        csv_reader = reader(read_obj)
+        csv_reader = csv.reader(read_obj)
         for row in csv_reader:
             category_map[row[0]] = row[1]
 
     for path in Path(data_dir).iterdir():
         if path.name.endswith('input.csv'):
             hydrate(path)
+    
+    hashtags_write(hashtags_dataset)
 
 def hydrate(id_file):
     with open(final_dataset, 'w') as output:
+        linewriter = csv.writer(output, delimiter=',', quotechar="\"")
         for tweet in twarc.hydrate(id_file.open()):
             category = category_map[tweet['id_str']]
-            tweet['category'] = category
-            output.write(json.dumps(tweet))
-            output.write('\n')
+            if "hashtags" in tweet["entities"]:
+                hashtags_list = tweet["entities"]["hashtags"]
+                for hashtag in hashtags_list:
+                    hashtagText = hashtag["text"].lower()
+                    if hashtagText in hashtags_count[category]:
+                        hashtags_count[category][hashtagText] += 1
+                    else:
+                        hashtags_count[category][hashtagText] = 1
+            text = tweet['full_text'].lower()
+            text = re.sub(r'[^\w\s]', '', text)
+            linewriter.writerow([text, category])
+
+def hashtags_write(id_file):
+    for category in hashtags_count.keys():
+        hashtags_count[category] = {k: v for k, v in sorted(hashtags_count[category].items(), key=lambda item: -item[1])}
+
+    with open(hashtags_dataset, 'w') as output:
+        linewriter = csv.writer(output, delimiter=',', quotechar="\"")
+        for category,hashtags in hashtags_count.items():
+            for hashtag,count in hashtags.items():
+                linewriter.writerow([hashtag, count, category]) 
 
 if __name__ == "__main__":
     main()
